@@ -9,7 +9,7 @@
   boolean ls_enable;
   boolean main_enable;
   
-  unsigned int pos_ls = 800; //target distance of lead screw motor
+  unsigned int pos_ls = -1500; //target distance of lead screw motor
   unsigned int adjust_pos_ls = 0; //target position of lead screw when in "brush" state
   unsigned int pos_main = 3000; //target distance of main motor
   unsigned int brush_spd = 1000; //initial brush speed
@@ -110,30 +110,38 @@
         touch = true;
       }
       stepper_ls.setSpeed(-1500);
+      stepper_ls.moveTo(pos_ls);
     }
   
     else if(touch == true)
     {
-      while (count < 3)//The index is set as 2, bigger the index, better the anti-noise effect will be but the longer delay we have.
+//      while (count < 3)//The index is set as 2, bigger the index, better the anti-noise effect will be but the longer delay we have.
+//      {
+//        analoginput = analogRead(flexpin);//Read the analog input
+//        if (analoginput > 20)
+//        {
+//          count = count + 1;//Anti-noise
+//        }
+//        else if(analoginput <= 20)
+//        {
+//          count = 0;//The analog read should reach the threshold a few times in a row
+//        }
+//        stepper_ls.runSpeed();
+//      }
+//      Serial.print("touched\r\n");
+//      touch = false;
+//      brush = true;
+//      adjust_pos_ls = stepper_ls.currentPosition();
+//      stepper_ls.moveTo(adjust_pos_ls);
+      stepper_ls.runSpeed();
+      if(stepper_ls.currentPosition() == pos_ls)
       {
-        analoginput = analogRead(flexpin);//Read the analog input
-        if (analoginput > 20)
-        {
-          count = count + 1;//Anti-noise
-        }
-        else if(analoginput <= 20)
-        {
-          count = 0;//The analog read should reach the threshold a few times in a row
-        }
-        stepper_ls.runSpeed();
+        touch = false;
+        brush = true;
+        stepper_main.moveTo(pos_main);
+        stepper_main.setSpeed(brush_spd);
+        Serial.print("touched\r\n");
       }
-      Serial.print("touched\r\n");
-      touch = false;
-      brush = true;
-      adjust_pos_ls = stepper_ls.currentPosition();
-      stepper_ls.moveTo(adjust_pos_ls);
-      stepper_main.moveTo(pos_main);
-      stepper_main.setSpeed(brush_spd);
     }
     
     else if(brush == true)
