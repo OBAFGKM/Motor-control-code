@@ -138,19 +138,19 @@
     
     else if(brush == true)
     {
-//       if (analogRead(A0) >= 5)
-//       {
-//         stepper_ls.setSpeed(1000);
-//       }
-//       if (analogRead(A0) == 0)
-//       {
-//         stepper_ls.setSpeed(-1000);
-//       }
-//       if ((analogRead(A0) != 0) && (analogRead(A0) < 5))
-//       {
-//         stepper_ls.setSpeed(0);
-//       }
-//       stepper_ls.runSpeed();
+       if (analogRead(A0) >= 5)
+       {
+         stepper_ls.setSpeed(1000);
+       }
+       if (analogRead(A0) == 0)
+       {
+         stepper_ls.setSpeed(-1000);
+       }
+       if ((analogRead(A0) != 0) && (analogRead(A0) < 5))
+       {
+         stepper_ls.setSpeed(0);
+       }
+       stepper_ls.runSpeed();
        stepper_main.runSpeed();
        if (stepper_main.currentPosition() == 2500)
        {
