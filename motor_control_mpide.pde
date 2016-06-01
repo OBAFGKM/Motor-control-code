@@ -60,13 +60,13 @@
       if(digitalRead(switch_ls) == HIGH){
         stepper_ls.setCurrentPosition(0);
         ls_enable = false;
-        Serial.println("Left switch is being closed!!!");
+//        Serial.println("Left switch is being closed!!!");
       }
       if(digitalRead(switch_main) == HIGH)
       {
         stepper_main.setCurrentPosition(0);
         main_enable = false;
-        Serial.println("Right switch is being closed!!!");
+//        Serial.println("Right switch is being closed!!!");
       }
       if(ls_enable == false && main_enable == false){
         initiate = false;
@@ -100,8 +100,14 @@
           waitForCommand = false;
           touch = true;
         }
-  //      Serial.println(command);
-  //      Serial.println(brush_num);
+        else if(brush_num > 1)
+        {
+          brush_num -= 1;
+          waitForCommand = false;
+          touch = true;
+        }
+        Serial.println(command);
+        Serial.println(brush_num);
       }
       else if(brush_num > 1)
       {
