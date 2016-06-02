@@ -35,7 +35,7 @@
     pinMode(switch_ls, INPUT);
     pinMode(switch_main, INPUT);
     pinMode(flexpin,INPUT);
-    stepper_ls.setMaxSpeed(1000);
+    stepper_ls.setMaxSpeed(2000);
     stepper_ls.setAcceleration(500);
     stepper_main.setMaxSpeed(2000);
     stepper_main.setAcceleration(500);
@@ -106,40 +106,26 @@
           waitForCommand = false;
           touch = true;
         }
-        Serial.println(command);
-        Serial.println(brush_num);
+        stepper_ls.setSpeed(-1500);
+        stepper_ls.moveTo(pos_ls);
+//        Serial.println(command);
+//        Serial.println(brush_num);
       }
       else if(brush_num > 1)
       {
         brush_num -= 1;
         waitForCommand = false;
         touch = true;
+        stepper_ls.setSpeed(-1500);
+        stepper_ls.moveTo(pos_ls);
       }
-      stepper_ls.setSpeed(-1500);
-      stepper_ls.moveTo(pos_ls);
+//      stepper_ls.setSpeed(-1500);
+//      stepper_ls.moveTo(pos_ls);
     }
   
     else if(touch == true)
     {
-//      while (count < 3)//The index is set as 2, bigger the index, better the anti-noise effect will be but the longer delay we have.
-//      {
-//        analoginput = analogRead(flexpin);//Read the analog input
-//        if (analoginput > 20)
-//        {
-//          count = count + 1;//Anti-noise
-//        }
-//        else if(analoginput <= 20)
-//        {
-//          count = 0;//The analog read should reach the threshold a few times in a row
-//        }
-//        stepper_ls.runSpeed();
-//      }
-//      Serial.print("touched\r\n");
-//      touch = false;
-//      brush = true;
-//      adjust_pos_ls = stepper_ls.currentPosition();
-//      stepper_ls.moveTo(adjust_pos_ls);
-      stepper_ls.runSpeed();
+      stepper_ls.run();
       if(stepper_ls.currentPosition() == pos_ls)
       {
         touch = false;
@@ -152,19 +138,6 @@
     
     else if(brush == true)
     {
-//       if (analogRead(A0) >= 5)
-//       {
-//         stepper_ls.setSpeed(1000);
-//       }
-//       if (analogRead(A0) == 0)
-//       {
-//         stepper_ls.setSpeed(-1000);
-//       }
-//       if ((analogRead(A0) != 0) && (analogRead(A0) < 5))
-//       {
-//         stepper_ls.setSpeed(0);
-//       }
-//       stepper_ls.runSpeed();
        stepper_main.runSpeed();
        if (stepper_main.currentPosition() == 2500)
        {
