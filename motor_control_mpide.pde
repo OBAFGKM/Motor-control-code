@@ -1,5 +1,4 @@
   #include <AccelStepper.h>
-  #include <MultiStepper.h>
   
   AccelStepper stepper_ls(1, 9, 8); //set up pins for lead screw motor
   AccelStepper stepper_main(1, 7, 6); //set up pins for main motor
@@ -8,13 +7,14 @@
   unsigned int switch_main = 4; //set up pin for main motor switch
   boolean ls_enable;
   boolean main_enable;
+  boolean brush_enable;
   
   unsigned int pos_ls = 800; //target distance of lead screw motor
   unsigned int adjust_pos_ls = 0; //target position of lead screw when in "brush" state
   unsigned int pos_main = 3000; //target distance of main motor
   unsigned int brush_spd = 1000; //initial brush speed
   unsigned int retreat_spd = 2000; //retreat speed of brush
-  unsigned int brush_num;
+//  unsigned int brush_num;
   unsigned int flexpin = A0;
   unsigned int pace = 100;
   unsigned int analoginput;
@@ -78,36 +78,21 @@
       count = 0;
       if(Serial.available())
       {
-        String command; //format is Speed#brush_num
-                        //Speed has three options: High, Medium, Low
-                        //brush_num is positive integer
+        String command; //format is command#
+                        //command is "START" or "STOP"
         command = Serial.readStringUntil('#');
-        brush_num = Serial.parseInt();
-        if(brush_num == 0)
-          brush_num = 1;
-        if(command == "High"){
-          brush_spd = 1500;
-          waitForCommand = false;
-          touch = true;
-        }
-        else if(command == "Medium"){
-          brush_spd = 500;
-          waitForCommand = false;
-          touch = true;
-        }
-        else if(command == "Low"){
-          brush_spd = 100;
-          waitForCommand = false;
-          touch = true;
-        }
-  //      Serial.println(command);
-  //      Serial.println(brush_num);
-      }
-      else if(brush_num > 1)
+          if(command == "START")
+          {
+            brush_enable = true; 
+          }
+          else if(command == "STOP")
+          {
+            brush_enable = false;
+          }
+      if(brush_enable == true)
       {
-        brush_num -= 1;
         waitForCommand = false;
-        touch = true;
+        touch = true; 
       }
       stepper_ls.setSpeed(-1500);
     }
@@ -168,7 +153,7 @@
       if((stepper_ls.currentPosition() == 0) && (stepper_main.targetPosition() != 0))
       {
         stepper_main.moveTo(0);
-        stepper_main.setSpeed(retreat_spd);
+        stepper_main.setSpeed(brush_spd);
       }
       if(stepper_main.currentPosition() == 0)
       {
