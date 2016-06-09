@@ -13,7 +13,11 @@
   unsigned int adjust_pos_ls = 0; //target position of lead screw when in "brush" state
   unsigned int pos_main = 3000; //target distance of main motor
   unsigned int brush_spd = 1000; //initial brush speed
+<<<<<<< HEAD
   // unsigned int retreat_spd = 2000; //retreat speed of brush
+=======
+  unsigned int retreat_spd = 2000; //retreat speed of brush
+>>>>>>> origin/stimulation
 //  unsigned int brush_num;
   unsigned int flexpin = A0;
   unsigned int pace = 100;
