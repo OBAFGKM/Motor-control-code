@@ -82,18 +82,18 @@
       count = 0;
       if(Serial.available())
       {
-        String command; //format is command#
-                        //command is "START" or "STOP"
-        command = Serial.readStringUntil('#');
-        if(command == "START")
+        String command; //format is command
+                        //command is "s" or "e"
+        command = Serial.readString();
+        if(command == "s")
         {
           brush_enable = true; 
         }
-        else if(command == "STOP")
+        else if(command == "e")
         {
           brush_enable = false;
         }
-	  }
+      }
       if(brush_enable == true)
       {
         waitForCommand = false;
@@ -117,7 +117,7 @@
         }
         stepper_ls.runSpeed();
       }
-      Serial.print("touched\r\n");
+      Serial.print("t\r\n");
       touch = false;
       brush = true;
       adjust_pos_ls = stepper_ls.currentPosition();
