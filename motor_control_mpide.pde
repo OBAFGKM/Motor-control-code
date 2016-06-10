@@ -8,8 +8,9 @@
   boolean ls_enable;
   boolean main_enable;
   boolean brush_enable;
+  boolean serial_available;
   
-  unsigned int pos_ls = 800; //target distance of lead screw motor
+  unsigned int pos_ls = -1500; //target distance of lead screw motor
   unsigned int adjust_pos_ls = 0; //target position of lead screw when in "forth" state
   unsigned int pos_main = 2500; //target distance of main motor
   unsigned int brush_spd = 1000; //initial brush speed
@@ -76,7 +77,8 @@
     
     else if(waitForCommand == true){
       count = 0;
-      if(Serial.available())
+      serial_available = Serial.available();
+      if(serial_available)
       {
         String command; //format is command
                         //command is "s" or "e"
@@ -94,55 +96,36 @@
       {
         waitForCommand = false;
         touch = true; 
+        stepper_ls.setSpeed(-1500);
+        stepper_ls.moveTo(pos_ls);
       }
-	  else
-	  {
-		waitForCommand = false;
+      else
+      {
+        waitForCommand = false;
         stopBrush = true;		
-	  }
-      // stepper_ls.setSpeed(-1500);
+      }
     }
   
     else if(touch == true)
     {
-      while (count < 3)//The index is set as 2, bigger the index, better the anti-noise effect will be but the longer delay we have.
+      stepper_ls.run();
+      if(stepper_ls.currentPosition() == pos_ls)
       {
-        analoginput = analogRead(flexpin);//Read the analog input
-        if (analoginput > 20)
+        touch = false;
+        forth = true;
+        stepper_main.moveTo(pos_main);
+        stepper_main.setSpeed(brush_spd);
+        if(serial_available)
         {
-          count = count + 1;//Anti-noise
+          Serial.print("t\r\n");
+          serial_available = false;
         }
-        else if(analoginput <= 20)
-        {
-          count = 0;//The analog read should reach the threshold a few times in a row
-        }
-        stepper_ls.runSpeed();
       }
-      Serial.print("t\r\n");
-      touch = false;
-      forth = true;
-      adjust_pos_ls = stepper_ls.currentPosition();
-      stepper_ls.moveTo(adjust_pos_ls);
-      stepper_main.moveTo(pos_main);
-      stepper_main.setSpeed(forth_spd);
     }
     
     else if(forth == true)
     {
-       // if (analogRead(A0) >= 5)
-       // {
-         // stepper_ls.setSpeed(1000);
-       // }
-       // if (analogRead(A0) == 0)
-       // {
-         // stepper_ls.setSpeed(-1000);
-       // }
-       // if ((analogRead(A0) != 0) && (analogRead(A0) < 5))
-       // {
-         // stepper_ls.setSpeed(0);
-       // }
-       // stepper_ls.runSpeed();
-       stepper_main.runSpeed();
+       stepper_main.runSpeedToPosition();
        if (stepper_main.currentPosition() == pos_main)
        {
          forth = false;
@@ -151,7 +134,7 @@
      }
     
     else if(back == true){
-      if((stepper_ls.currentPosition() == 0) && (stepper_main.targetPosition() != 0))
+      if(stepper_main.targetPosition() != 0)
       {
         stepper_main.moveTo(0);
         stepper_main.setSpeed(brush_spd);
@@ -164,8 +147,8 @@
       stepper_main.runSpeedToPosition();
     }
 	
-	else if(stopBrush == true)
-	{
+    else if(stopBrush == true)
+    {
       if((stepper_ls.currentPosition() != 0) && (stepper_ls.targetPosition() != 0))
       {
         stepper_ls.moveTo(0);
@@ -177,6 +160,6 @@
         waitForCommand = true;
       }
       stepper_ls.runSpeedToPosition();
-	}
+    }
   }
 
