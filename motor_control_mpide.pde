@@ -13,7 +13,7 @@
   unsigned int pos_ls = -1500; //target distance of lead screw motor
   unsigned int adjust_pos_ls = 0; //target position of lead screw when in "forth" state
   unsigned int pos_main = 2500; //target distance of main motor
-  unsigned int brush_spd = 1000; //initial brush speed
+  unsigned int brush_spd = 750; //initial brush speed
 
   unsigned int flexpin = A0;
   unsigned int pace = 100;
@@ -61,13 +61,13 @@
       if(digitalRead(switch_ls) == HIGH){
         stepper_ls.setCurrentPosition(0);
         ls_enable = false;
-        Serial.println("Left switch is being closed!!!");
+        //Serial.println("Left switch is being closed!!!");
       }
       if(digitalRead(switch_main) == HIGH)
       {
         stepper_main.setCurrentPosition(0);
         main_enable = false;
-        Serial.println("Right switch is being closed!!!");
+        //Serial.println("Right switch is being closed!!!");
       }
       if(ls_enable == false && main_enable == false){
         initiate = false;
